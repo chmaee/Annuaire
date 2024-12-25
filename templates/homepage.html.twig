@@ -1,0 +1,80 @@
+{# templates/homepage.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block page_content %}
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-8">
+                <h1 class="display-4">Bienvenue sur l'Annuaire</h1>
+
+                {% if app.user %}
+                    <p class="lead">Vous revoilà, <strong class="text-primary fw-bold">{{ app.user.login }}</strong> !</p>
+                {% endif %}
+
+                {% if is_granted('ROLE_ADMIN') %}
+                    {% set visibleCount = utilisateurs|filter(user => user.visible)|length %}
+                    {% set maskedCount = utilisateurs|filter(user => not user.visible)|length %}
+
+                    {% if visibleCount > 0 and maskedCount > 0 %}
+                        <p class="lead">Voici les profils visibles et masqués :</p>
+                    {% elseif visibleCount > 0 %}
+                        <p class="lead">Voici les profils visibles :</p>
+                    {% else %}
+                        <p class="lead">Tous les profils sont masqués.</p>
+                    {% endif %}
+                {% else %}
+                    <p class="lead">Voici les profils visibles :</p>
+                {% endif %}
+
+                <ul class="list-group">
+                    {% for utilisateur in utilisateurs %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <a href="{{ path('app_utilisateur_show', {'login': utilisateur.login}) }}">{{ utilisateur.login }}</a>
+                            <div class="d-flex flex-column align-items-end">
+                                <div class="d-flex align-items-center">
+                                    {% if utilisateur.visible %}
+                                        <span class="badge bg-success me-2">Visible</span>
+                                    {% else %}
+                                        <span class="badge bg-danger me-2">Masqué</span>
+                                    {% endif %}
+                                    <div class="vr mx-2" style="height: 20px;"></div>
+
+                                    {% if app.user %}
+                                        {# Si l'utilisateur est Admin ou Super Admin, il peut voir tous les rôles #}
+                                        {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_SUPER_ADMIN') %}
+                                            {% if 'ROLE_SUPER_ADMIN' in utilisateur.roles %}
+                                                <span class="badge bg-danger text-white">Super Admin</span>
+                                            {% elseif 'ROLE_ADMIN' in utilisateur.roles %}
+                                                <span class="badge bg-warning text-dark">Admin</span>
+                                            {% elseif utilisateur.roles is empty %}
+                                                {# Ne rien afficher si aucun rôle n'existe #}
+                                            {% else %}
+                                                <span class="badge bg-secondary text-white">Utilisateur</span>
+                                            {% endif %}
+                                            {# Si l'utilisateur est connecté mais n'a pas de rôle Admin/Super Admin, il ne voit que le rôle "Utilisateur" #}
+                                        {% else %}
+                                            {# Si l'utilisateur a des rôles mais n'est ni Admin ni Super Admin #}
+                                            {% if utilisateur.roles is empty %}
+                                                {# Ne rien afficher si l'utilisateur n'a pas de rôle #}
+                                            {% endif %}
+                                        {% endif %}
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="col-md-4">
+                <div class="alert alert-info alert-custom" role="alert">
+                    Cette zone peut contenir des informations supplémentaires ou des alertes.
+                </div>
+
+                {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_SUPER_ADMIN') or is_granted('ROLE_USER') %}
+                    <a href="{{ path('app_utilisateur_list') }}" class="btn btn-primary">Voir la liste des utilisateurs</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

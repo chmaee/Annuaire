@@ -1,0 +1,97 @@
+{# templates/utilisateur/form.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block title %}{% if isEdit %}Modifier mon compte{% else %}Créer un Utilisateur{% endif %}{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+{% endblock %}
+
+{% block page_content %}
+    <main class="container mt-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 offset-md-3">
+                    <h2 class="text-center text-dark mt-5">{% if isEdit %}Modifier mon compte{% else %}Créer un Utilisateur{% endif %}</h2>
+                    <div class="text-center mb-5 text-dark">{% if isEdit %}Mettez à jour les informations de votre compte{% else %}Remplissez le formulaire pour créer un utilisateur{% endif %}</div>
+                    <div class="card my-5">
+                        {{ form_start(form, {'attr': {'class': 'card-body cardbody-color p-lg-5'}}) }}
+
+                        <div class="mb-3">
+                            {{ form_label(form.login, 'Login', {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.login, {'attr': {'class': 'form-control', 'placeholder': 'Login'}}) }}
+                            {{ form_errors(form.login) }}
+                            <p class="help-input-form">Entre 4 et 20 caractères</p>
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form_label(form.adresseEmail, 'Adresse mail', {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.adresseEmail, {'attr': {'class': 'form-control', 'placeholder': 'Adresse mail'}}) }}
+                            {{ form_errors(form.adresseEmail) }}
+                        </div>
+
+                        {% if isEdit %}
+                            <div class="mb-3">
+                                {{ form_label(form.telephone, 'Téléphone', {'label_attr': {'class': 'form-label'}}) }}
+                                {{ form_widget(form.telephone, {'attr': {'class': 'form-control', 'placeholder': 'Téléphone'}}) }}
+                                {{ form_errors(form.telephone) }}
+                            </div>
+                        {% endif %}
+
+                        {% if isEdit %}
+                            {% if isCurrentUser %}
+                                <div class="mb-3">
+                                    <button type="button" class="btn btn-secondary w-100" id="modify-password-btn">Modifier le Mot de Passe</button>
+                                </div>
+                                <div id="password-fields" style="display:none;">
+                                    <div class="mb-3">
+                                        {{ form_label(form.oldPassword, 'Ancien mot de passe', {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_widget(form.oldPassword, {'attr': {'class': 'form-control', 'placeholder': 'Ancien mot de passe'}}) }}
+                                        {{ form_errors(form.oldPassword) }}
+                                    </div>
+                                    <div class="mb-3">
+                                        {{ form_label(form.newPassword, 'Nouveau mot de passe', {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_widget(form.newPassword, {'attr': {'class': 'form-control', 'placeholder': 'Nouveau mot de passe'}}) }}
+                                        {{ form_errors(form.newPassword) }}
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% else %}
+                            <div class="mb-3">
+                                {{ form_label(form.plainPassword, 'Mot de passe', {'label_attr': {'class': 'form-label'}}) }}
+                                {{ form_widget(form.plainPassword, {'attr': {'class': 'form-control', 'placeholder': 'Mot de passe'}}) }}
+                                {{ form_errors(form.plainPassword) }}
+                                <p class="help-input-form">Entre 8 et 30 caractères, avec au moins une minuscule, une majuscule et un chiffre</p>
+                            </div>
+                        {% endif %}
+
+
+                        <div class="mb-3">
+                            {{ form_label(form.code, 'Code', {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.code, {'attr': {'class': 'form-control', 'placeholder': 'Code (laissez vide pour générer un code aléatoire)'}}) }}
+                            <div id="codeFeedback"></div>
+                            {{ form_errors(form.code) }}
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="form-check">
+                                {{ form_widget(form.visible, {'attr': {'class': 'form-check-input'}}) }}
+                                {{ form_label(form.visible, 'Visible', {'label_attr': {'class': 'form-check-label'}}) }}
+                                {{ form_errors(form.visible) }}
+                            </div>
+                        </div>
+
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-color px-5 mb-5 w-100">{% if isEdit %}Modifier{% else %}Inscrire{% endif %}</button>
+                        </div>
+
+                        {{ form_end(form) }}
+                        <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+{% endblock %}

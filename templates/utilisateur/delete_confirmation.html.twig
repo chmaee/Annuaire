@@ -1,0 +1,18 @@
+{# templates/utilisateur/delete_confirmation.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block titre %}Confirmer la Suppression{% endblock %}
+
+{% block page_content %}
+    <div class="container mt-4">
+        <h1>Confirmer la Suppression</h1>
+        <p>Êtes-vous sûr de vouloir supprimer l'utilisateur "{{ utilisateur.login }}" ?</p>
+
+        <form method="post" action="{{ path('app_utilisateur_delete', { id: utilisateur.id }) }}">
+            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ utilisateur.id) }}">
+            <button type="submit" class="btn btn-danger">Supprimer</button>
+            <a href="{{ path('app_utilisateur_list') }}" class="btn btn-secondary">Annuler</a>
+        </form>
+    </div>
+{% endblock %}

@@ -1,0 +1,51 @@
+{# templates/utilisateur/connexion.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block title %}Connexion{% endblock %}
+
+{% block page_content %}
+    <main class="container mt-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 offset-md-3">
+                    <h2 class="text-center text-dark mt-5">Connexion</h2>
+                    <div class="text-center mb-5 text-dark">Connectez-vous ! </div>
+                    <div class="card my-5">
+                        <form action="{{ path('app_connexion') }}" method="post" class="card-body cardbody-color p-lg-5">
+                            <div class="text-center mb-4">
+                                <img src="https://cdn.pixabay.com/photo/2016/03/31/19/56/avatar-1295397__340.png"
+                                     class="img-fluid profile-image-pic img-thumbnail rounded-circle my-3"
+                                     width="150px" alt="profile">
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="username" class="form-label">Login</label>
+                                <input type="text" id="username" name="_username" class="form-control" placeholder="Login" value="{{ last_username }}" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="password" class="form-label">Mot de passe</label>
+                                <input type="password" id="password" name="_password" class="form-control" placeholder="Mot de passe" required>
+                            </div>
+
+                            <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}"/>
+
+                            <div class="text-center">
+                                <button type="submit" class="btn btn-color px-5 mb-5 w-100">Se Connecter</button>
+                            </div>
+
+                            <div id="emailHelp" class="form-text text-center mb-5 text-dark">
+                                Pas encore inscrit ? <a href="{{ path('app_inscription') }}" class="text-dark fw-bold">Créez un compte</a>
+                            </div>
+
+                            {% if error %}
+                                <div class="error text-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+                            {% endif %}
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+{% endblock %}

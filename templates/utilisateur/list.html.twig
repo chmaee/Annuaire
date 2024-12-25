@@ -1,0 +1,96 @@
+{# templates/utilisateur/list.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des Utilisateurs{% endblock %}
+
+{% block page_content %}
+    <div class="container mt-4">
+        <h1>Liste des Utilisateurs</h1>
+
+        {% if app.user %}
+            <p class="lead">Vous revoilà, <span class="fw-bold text-primary">{{ app.user.login }}</span> !</p>
+        {% else %}
+            <p class="lead">Bienvenue, <span class="fw-bold text-primary">visiteur</span> !</p>
+        {% endif %}
+
+        {% if is_granted('ROLE_ADMIN') %}
+            <a href="{{ path('app_utilisateur_create') }}" class="btn btn-primary mb-3">Ajouter un Utilisateur</a>
+        {% endif %}
+
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>Login</th>
+                <th>Email</th>
+                <th>Visibilité</th>
+                {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_SUPER_ADMIN') %}
+                    <th>Rôle</th>
+                {% endif %}
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% if utilisateurs is empty %}
+                <tr>
+                    <td colspan="5">Aucun utilisateur trouvé.</td>
+                </tr>
+            {% else %}
+                {% for utilisateur in utilisateurs %}
+                    <tr>
+                        <td>{{ utilisateur.login }}</td>
+                        <td>{{ utilisateur.adresseEmail }}</td>
+                        <td>
+
+                            {% if utilisateur.visible %}
+                                <span class="badge bg-success">Visible</span>
+                            {% else %}
+                                <span class="badge bg-danger">Masqué</span>
+                            {% endif %}
+                        </td>
+                        {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_SUPER_ADMIN') %}
+                            <td>
+                                {% if 'ROLE_ADMIN' in utilisateur.roles %}
+                                    <span class="badge bg-warning text-dark">Admin</span>
+                                {% elseif 'ROLE_SUPER_ADMIN' in utilisateur.roles %}
+                                    <span class="badge bg-danger text-white">Super Admin</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">Utilisateur</span>
+                                {% endif %}
+                            </td>
+                        {% endif %}
+                        <td>
+                            <a href="{{ path('app_utilisateur_show', { login: utilisateur.login }) }}" class="btn btn-info btn-sm">Voir</a>
+
+                            {% if app.user is not null and app.user.login == utilisateur.login %}
+                                {# L'utilisateur peut modifier ou supprimer son propre compte #}
+                                <a href="{{ path('app_utilisateur_edit', { login: utilisateur.login }) }}" class="btn btn-warning btn-sm">Modifier</a>
+                                <form method="post" action="{{ path('app_utilisateur_delete', { login: utilisateur.login }) }}" style="display:inline;">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ utilisateur.id) }}">
+                                    <button type="submit" class="btn btn-danger btn-sm">Supprimer</button>
+                                </form>
+                            {% elseif app.user is not null and ('ROLE_SUPER_ADMIN' in app.user.roles or 'ROLE_ADMIN' in app.user.roles) %}
+                                {# Super Admin et Admin peuvent gérer les utilisateurs normaux #}
+                                {% if utilisateur.roles is not null and ('ROLE_SUPER_ADMIN' in utilisateur.roles or 'ROLE_ADMIN' in utilisateur.roles) %}
+                                    {# Ne permet pas de modifier ou de supprimer d'autres super admins ou admins #}
+                                    {% if 'ROLE_ADMIN' in utilisateur.roles %}
+                                        <a href="{{ path('app_utilisateur_retrograder_admin', { login: utilisateur.login }) }}" class="btn btn-danger btn-sm">Rétrograder en utilisateur</a>
+                                    {% endif %}
+                                {% else %}
+                                    {# Super Admin et Admin peuvent modifier ou supprimer des utilisateurs normaux #}
+                                    <a href="{{ path('app_utilisateur_edit', { login: utilisateur.login }) }}" class="btn btn-warning btn-sm">Modifier</a>
+                                    <form method="post" action="{{ path('app_utilisateur_delete', { login: utilisateur.login }) }}" style="display:inline;">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ utilisateur.id) }}">
+                                        <button type="submit" class="btn btn-danger btn-sm">Supprimer</button>
+                                    </form>
+                                    <a href="{{ path('app_utilisateur_promouvoir_admin', { login: utilisateur.login }) }}" class="btn btn-success btn-sm">Donner admin</a>
+                                {% endif %}
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            {% endif %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

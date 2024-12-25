@@ -1,0 +1,32 @@
+# config/services.yaml
+
+parameters:
+    maintenance_mode: false
+
+services:
+    _defaults:
+        autowire: true      # Automatically injects dependencies in your services.
+        autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+
+    # makes classes in src/ available to be used as services
+    # this creates a service per class whose id is the fully-qualified class name
+    App\:
+        resource: '../src/'
+        exclude:
+            - '../src/DependencyInjection/'
+            - '../src/Entity/'
+            - '../src/Kernel.php'
+
+    # No need to manually define FlashMessageHelper or its interface here
+
+
+    App\Service\UtilisateurManager:
+        arguments:
+            $passwordHasher: '@security.password_hasher'
+
+    App\Service\MaintenanceListener:
+        arguments:
+            $maintenanceMode: '%maintenance_mode%'
+            $router: '@router'
+        tags:
+            - { name: kernel.event_listener, event: kernel.request }

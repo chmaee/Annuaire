@@ -1,0 +1,75 @@
+{# templates/utilisateur/inscription.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block title %}Inscription{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+{% endblock %}
+
+{% block page_content %}
+    <main class="container mt-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 offset-md-3">
+                    <h2 class="text-center text-dark mt-5">Inscription</h2>
+                    <div class="text-center mb-5 text-dark">Remplissez le formulaire pour vous inscrire</div>
+                    <div class="card my-5">
+                        {{ form_start(form, {'attr': {'class': 'card-body cardbody-color p-lg-5'}}) }}
+
+                        <div class="text-center mb-4">
+                            <img src="https://cdn.pixabay.com/photo/2016/03/31/19/56/avatar-1295397__340.png" class="img-fluid profile-image-pic img-thumbnail rounded-circle my-3"
+                                 width="150px" alt="profile">
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form_label(form.login, 'Login', {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.login, {'attr': {'class': 'form-control', 'placeholder': 'Login'}}) }}
+                            {{ form_errors(form.login) }}
+                            <p class="help-input-form">Entre 4 et 20 caractères</p>
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form_label(form.plainPassword, 'Mot de passe', {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.plainPassword, {'attr': {'class': 'form-control', 'placeholder': 'Mot de passe'}}) }}
+                            {{ form_errors(form.plainPassword) }}
+                            <p class="help-input-form">Entre 8 et 30 caractères, au moins une minuscule, une majuscule et un nombre</p>
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form_label(form.adresseEmail, 'Adresse mail', {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.adresseEmail, {'attr': {'class': 'form-control', 'placeholder': 'Adresse mail'}}) }}
+                            {{ form_errors(form.adresseEmail) }}
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form_label(form.code, 'Code', {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.code, {'attr': {'id': 'code', 'class': 'form-control', 'placeholder': 'Code (laissez vide pour générer un code aléatoire)'}}) }}
+                            <div id="codeFeedback"></div> <!-- Zone de feedback pour la vérification du code -->
+                            {{ form_errors(form.code) }}
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="form-check">
+                                {{ form_widget(form.visible, {'attr': {'class': 'form-check-input'}}) }}
+                                {{ form_label(form.visible, 'Visible', {'label_attr': {'class': 'form-check-label'}}) }}
+                                {{ form_errors(form.visible) }}
+                            </div>
+                        </div>
+
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-color px-5 mb-5 w-100">Inscrire</button>
+                        </div>
+                        <div class="text-center">
+                            <a href="{{ path('app_connexion') }}" class="text-dark fw-bold">Déjà inscrit ? Connectez-vous ici</a>
+                        </div>
+
+                        {{ form_end(form) }}
+                        <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+{% endblock %}
